@@ -58,7 +58,7 @@ object Experiment {
       .map(_ => Experiment.buildOne)
   }
 
-   def buildIteratorId(): Iterator[Identifiable] = {
+  def buildIteratorId(): Iterator[Identifiable] = {
     Iterator
       .from(1)
       .takeWhile(_ < 100000)
@@ -67,32 +67,30 @@ object Experiment {
 
 }
 class TestBenchmark {
-  import TestBenchmark._
-
   @Benchmark
   def typeclass(): Int =
     Experiment.buildIterator
-      .map{
+      .map {
         case f: Experiment.Foo => Experiment.typeclass(f)
         case b: Experiment.Bar => Experiment.typeclass(b)
-    }
+      }
       .count(_.length == 5)
 
   @Benchmark
   def oop(): Int =
-    Experiment.buildIteratorId
-      .map(Experiment.oop)
+    Experiment.buildIterator
+      .map {
+        case f: Experiment.Foo => Experiment.oop(f)
+        case b: Experiment.Bar => Experiment.oop(b)
+      }
       .count(_.length == 5)
 
   @Benchmark
   def duck(): Int =
-    Experiment.buildIteratorId
-    .map(Experiment.duck)
-    .count(_.length == 5)
-}
-
-object TestBenchmark {
-  val helloFile = Source.fromInputStream(
-    getClass.getClassLoader.getResourceAsStream("hello.txt")
-  )
+    Experiment.buildIterator
+      .map {
+        case f: Experiment.Foo => Experiment.duck(f)
+        case b: Experiment.Bar => Experiment.duck(b)
+      }
+      .count(_.length == 5)
 }
